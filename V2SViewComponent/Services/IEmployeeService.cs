@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,17 @@ namespace V2SViewComponent.Interfaces
 {
     public interface IEmployeeService
     {
-        IEnumerable<DepartmentHeadCount> EmployeeCountByDept();
+        // Create
+        Task<Employee> CreateAsync(Employee employee);
+
+        // Read
+        Task<Employee> GetByIdAsync(string id);
+        Task<IEnumerable<Employee>> GetAllAsync();
+
+        // Update
+        Task UpdateAsync(string id, Employee employee);
+
+        // Delete
+        Task DeleteAsync(string id);
     }
 }

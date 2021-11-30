@@ -1,5 +1,8 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,11 +10,22 @@ namespace V2SViewComponent.Models
 {
     public class Employee
     {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public Department Department { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
 
-        public decimal Salary { get; set; }
+        [Required(ErrorMessage = "First name is required")]
+        public string FirstName { get; set; }
+
+        [Required(ErrorMessage = "Last name is required")]
+        public string LastName { get; set; }
+
+        [Display(Name = "Date of Birth")]
+        public string DOB { get; set; }
+
+        [Required(ErrorMessage = "Designation is required")]
+        public string Designation { get; set; }
+        public string Technology { get; set; }
+        public double YearsOfExperience { get; set; }
     }
 }
