@@ -19,9 +19,18 @@ namespace V2SViewComponent.Controllers
             _employeeService = employeeService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _employeeService.GetAllAsync());
+            ViewData["CurrentFilter"] = searchString;
+            var employees = await _employeeService.GetAllAsync();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                employees = employees.Where(e => e.FirstName.ToLower().Contains(searchString.ToLower())
+                                       || e.LastName.ToLower().Contains(searchString.ToLower()) || e.DOB.Contains(searchString) || e.Designation.ToLower().Contains(searchString.ToLower()));
+            }
+
+            return View(employees);
         }
 
         // GET: EmployeeController/Create
