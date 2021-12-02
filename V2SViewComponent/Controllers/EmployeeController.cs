@@ -27,7 +27,7 @@ namespace V2SViewComponent.Controllers
             if (!string.IsNullOrEmpty(searchString))
             {
                 employees = employees.Where(e => e.FirstName.ToLower().Contains(searchString.ToLower())
-                                       || e.LastName.ToLower().Contains(searchString.ToLower()) || e.DOB.Contains(searchString) || e.Designation.ToLower().Contains(searchString.ToLower()));
+                                       || e.LastName.ToLower().Contains(searchString.ToLower()) || e.DOB.ToString("dd/MM/yyyy").Contains(searchString) || e.Designation.ToLower().Contains(searchString.ToLower()));
             }
 
             return View(employees);
@@ -38,7 +38,6 @@ namespace V2SViewComponent.Controllers
         {
             ViewBag.FormAction = "Create";
             return View();
-            //return View(new Employee());
         }
 
         [HttpPost]

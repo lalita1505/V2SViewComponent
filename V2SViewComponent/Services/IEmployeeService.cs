@@ -10,7 +10,7 @@ namespace V2SViewComponent.Interfaces
     public interface IEmployeeService
     {
         // Create
-        Task<Employee> CreateAsync(Employee employee);
+        Task CreateAsync(Employee employee);
 
         // Read
         Task<Employee> GetByIdAsync(string id);

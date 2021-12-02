@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MongoDB.Driver.Linq;
 using System.Threading.Tasks;
 using V2SViewComponent.Interfaces;
 using V2SViewComponent.Models;
@@ -21,10 +22,9 @@ namespace V2SViewComponent.Services
             _employees = collection;
         }
 
-        public async Task<Employee> CreateAsync(Employee employee)
+        public async Task CreateAsync(Employee employee)
         {
             await _employees.InsertOneAsync(employee);
-            return employee;
         }
 
         public async Task<Employee> GetByIdAsync(string id)
@@ -34,7 +34,9 @@ namespace V2SViewComponent.Services
 
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            return  await _employees.Find(e => true).ToListAsync();
+            return await _employees.AsQueryable<Employee>().ToListAsync();
+            //return await _employees.Find("{}").ToListAsync();
+            //return await _employees.Find(e => true).ToListAsync();
         }
 
         public async Task UpdateAsync(string id, Employee employee)
