@@ -22,13 +22,7 @@ namespace V2SViewComponent.Controllers
         public async Task<IActionResult> Index(string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-            var employees = await _employeeService.GetAllAsync();
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                employees = employees.Where(e => e.FirstName.ToLower().Contains(searchString.ToLower())
-                                       || e.LastName.ToLower().Contains(searchString.ToLower()) || e.DOB.ToString("dd/MM/yyyy").Contains(searchString) || e.Designation.ToLower().Contains(searchString.ToLower()));
-            }
+            var employees = await _employeeService.GetSearchRecords(searchString);
 
             return View(employees);
         }

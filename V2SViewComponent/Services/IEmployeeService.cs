@@ -15,6 +15,7 @@ namespace V2SViewComponent.Interfaces
         // Read
         Task<Employee> GetByIdAsync(string id);
         Task<IEnumerable<Employee>> GetAllAsync();
+        Task<IEnumerable<Employee>> GetSearchRecords(string searchString);
 
         // Update
         Task UpdateAsync(string id, Employee employee);

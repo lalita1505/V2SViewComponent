@@ -2,7 +2,6 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MongoDB.Driver.Linq;
 using System.Threading.Tasks;
 using V2SViewComponent.Interfaces;
@@ -35,8 +34,19 @@ namespace V2SViewComponent.Services
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
             return await _employees.AsQueryable<Employee>().ToListAsync();
-            //return await _employees.Find("{}").ToListAsync();
-            //return await _employees.Find(e => true).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Employee>> GetSearchRecords(string searchString)
+        {
+            var employees = _employees.AsQueryable<Employee>();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower();
+                employees = _employees.AsQueryable<Employee>().Where(e => e.FirstName.ToLower().Contains(searchString) || e.LastName.ToLower().Contains(searchString)
+                                             || e.Designation.ToLower().Contains(searchString));
+            }
+            
+            return await employees.ToListAsync();
         }
 
         public async Task UpdateAsync(string id, Employee employee)
