@@ -2,6 +2,7 @@
 @model V2SViewComponent.Models.Employee
 
 <form asp-action="@ViewBag.FormAction">
+    <span class="text-danger">@ViewBag.Message</span>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     @if(ViewBag.FormAction == "Edit"){
         <input type="hidden" name="Id" value="@Model.Id" />

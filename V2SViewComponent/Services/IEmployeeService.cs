@@ -16,6 +16,7 @@ namespace V2SViewComponent.Interfaces
         Task<Employee> GetByIdAsync(string id);
         Task<IEnumerable<Employee>> GetAllAsync();
         Task<IEnumerable<Employee>> GetSearchRecords(string searchString);
+        bool IsDuplicateRecord(Employee employee);
 
         // Update
         Task UpdateAsync(string id, Employee employee);

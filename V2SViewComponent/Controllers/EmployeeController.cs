@@ -19,12 +19,32 @@ namespace V2SViewComponent.Controllers
             _employeeService = employeeService;
         }
 
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index()
         {
-            ViewData["CurrentFilter"] = searchString;
-            var employees = await _employeeService.GetSearchRecords(searchString);
-
+            var employees = await _employeeService.GetAllAsync();
             return View(employees);
+        }
+
+        public async Task<IActionResult> Search(string searchString)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    ViewData["CurrentFilter"] = searchString;
+                    var employees = await _employeeService.GetSearchRecords(searchString);
+                    return View("Index", employees);
+                }
+                else
+                {
+                    ViewBag.SearchMsg = "Please enter the search string";
+                    return View("Index", await _employeeService.GetAllAsync());
+                }
+            }
+            catch (Exception ex)
+            {
+                return View();
+            }
         }
 
         // GET: EmployeeController/Create
@@ -35,7 +55,6 @@ namespace V2SViewComponent.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Employee employee)
         {
             ViewBag.FormAction = "Create";
@@ -43,10 +62,15 @@ namespace V2SViewComponent.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _employeeService.CreateAsync(employee);
-                    return RedirectToAction(nameof(Index));
+                    var isDupRecord = _employeeService.IsDuplicateRecord(employee);
+                    if (!isDupRecord)
+                    {
+                        await _employeeService.CreateAsync(employee);
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                        ViewBag.Message = string.Format("{0} Already Exist", employee.FirstName.ToUpper());
                 }
-
                 return View(employee);
             }
             catch
@@ -69,7 +93,6 @@ namespace V2SViewComponent.Controllers
 
         // POST: EmployeeController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, Employee employee)
         {
             ViewBag.FormAction = "Edit";
@@ -107,7 +130,6 @@ namespace V2SViewComponent.Controllers
 
         // POST: EmployeeController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string id, IFormCollection collection)
         {
             try

@@ -26,6 +26,16 @@ namespace V2SViewComponent.Services
             await _employees.InsertOneAsync(employee);
         }
 
+        public bool IsDuplicateRecord(Employee employee)
+        {
+            var emp = _employees.AsQueryable<Employee>().Where(e => e.FirstName.ToLower() == employee.FirstName.ToLower()).FirstOrDefault();
+            if (emp == null)
+                return false;
+            else
+                return true;
+        }
+
+
         public async Task<Employee> GetByIdAsync(string id)
         {
             return await _employees.Find<Employee>(e => e.Id == id).FirstOrDefaultAsync();
@@ -38,14 +48,9 @@ namespace V2SViewComponent.Services
 
         public async Task<IEnumerable<Employee>> GetSearchRecords(string searchString)
         {
-            var employees = _employees.AsQueryable<Employee>();
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                searchString = searchString.ToLower();
-                employees = _employees.AsQueryable<Employee>().Where(e => e.FirstName.ToLower().Contains(searchString) || e.LastName.ToLower().Contains(searchString)
-                                             || e.Designation.ToLower().Contains(searchString));
-            }
-            
+            searchString = searchString.ToLower();
+            var employees = _employees.AsQueryable<Employee>().Where(e => e.FirstName.ToLower().Contains(searchString) || e.LastName.ToLower().Contains(searchString)
+                                         || e.Designation.ToLower().Contains(searchString));
             return await employees.ToListAsync();
         }
 
