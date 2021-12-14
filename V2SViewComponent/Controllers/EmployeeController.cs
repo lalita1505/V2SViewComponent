@@ -14,25 +14,14 @@ namespace V2SViewComponent.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;
-        //private readonly IMapper _mapper;
 
         public EmployeeController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
-            //_mapper = mapper;
         }
-
-        //[HttpPost]
-        //public EmployeeModel Post([FromBody] Employee employee)
-        //{
-        //    var empModel = _mapper.Map<Employee, EmployeeModel>(employee);
-        //    return empModel;
-        //}
 
         public async Task<IActionResult> Index()
         {
-            //Employee emp = new Employee();
-            //var empDTO = _mapper.Map<EmployeeDTO>(emp);
             var employees = await _employeeService.GetAllAsync();
             return View(employees);
         }
@@ -81,7 +70,7 @@ namespace V2SViewComponent.Controllers
                         return RedirectToAction(nameof(Index));
                     }
                     else
-                        ViewBag.Message = string.Format("{0} Already Exist", employee.FirstName.ToUpper());
+                        ViewBag.Message = string.Format("{0} Already Exist", employee.Email.ToUpper());
                 }
                 return View(employee);
             }
@@ -117,8 +106,17 @@ namespace V2SViewComponent.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _employeeService.UpdateAsync(id, employee);
-                    return RedirectToAction(nameof(Index));
+                    var isDupRecord = _employeeService.IsDuplicateRecord(employee);
+                    if (!isDupRecord)
+                    {
+                        await _employeeService.UpdateAsync(id, employee);
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                        ViewBag.Message = string.Format("{0} Already Exist", employee.Email.ToUpper());
+
+                    //await _employeeService.UpdateAsync(id, employee);
+                    //return RedirectToAction(nameof(Index));
                 }
 
                 return View(employee);

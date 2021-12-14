@@ -34,7 +34,7 @@ namespace V2SViewComponent.Services
 
         public bool IsDuplicateRecord(Employee employee)
         {
-            var emp = _employees.AsQueryable<Employee>().Where(e => e.FirstName.ToLower() == employee.FirstName.ToLower() && e.LastName.ToLower() == employee.LastName.ToLower() && e.DOB.ToString("dd/MM/yyyy") == employee.DOB.ToString("dd/MM/yyyy")).FirstOrDefault();
+            var emp = _employees.AsQueryable<Employee>().Where(e => e.Email.ToLower() == employee.Email.ToLower()).FirstOrDefault();
             if (emp == null)
                 return false;
             else
