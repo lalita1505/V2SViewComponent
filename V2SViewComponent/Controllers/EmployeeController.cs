@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using System;
@@ -13,14 +14,25 @@ namespace V2SViewComponent.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;
+        //private readonly IMapper _mapper;
 
         public EmployeeController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
+            //_mapper = mapper;
         }
+
+        //[HttpPost]
+        //public EmployeeModel Post([FromBody] Employee employee)
+        //{
+        //    var empModel = _mapper.Map<Employee, EmployeeModel>(employee);
+        //    return empModel;
+        //}
 
         public async Task<IActionResult> Index()
         {
+            //Employee emp = new Employee();
+            //var empDTO = _mapper.Map<EmployeeDTO>(emp);
             var employees = await _employeeService.GetAllAsync();
             return View(employees);
         }
@@ -32,7 +44,7 @@ namespace V2SViewComponent.Controllers
                 if (!string.IsNullOrEmpty(searchString))
                 {
                     ViewData["CurrentFilter"] = searchString;
-                    var employees = await _employeeService.GetSearchRecords(searchString);
+                    var employees = _employeeService.GetSearchRecords(searchString);
                     return View("Index", employees);
                 }
                 else
@@ -41,7 +53,7 @@ namespace V2SViewComponent.Controllers
                     return View("Index", await _employeeService.GetAllAsync());
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return View();
             }

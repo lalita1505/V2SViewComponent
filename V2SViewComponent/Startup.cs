@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using V2SViewComponent.Interfaces;
 using V2SViewComponent.Middleware;
 using V2SViewComponent.Services;
+using V2SViewComponent.Models;
 
 namespace V2SViewComponent
 {
@@ -27,9 +28,11 @@ namespace V2SViewComponent
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(MappingProfile));
             services.AddControllersWithViews();
             services.AddSingleton<IMongoClient, MongoClient>(sp => new MongoClient(Configuration.GetConnectionString("MongoDb")));
             services.AddSingleton<IEmployeeService, EmployeeService>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

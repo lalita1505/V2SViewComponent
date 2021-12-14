@@ -1,4 +1,4 @@
-﻿@model IEnumerable<V2SViewComponent.Models.Employee>
+﻿@model IEnumerable<V2SViewComponent.Models.EmployeeModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -35,10 +35,7 @@
                 @Html.DisplayNameFor(model => model.Designation)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Technology)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.YearsOfExperience)
+                @Html.DisplayNameFor(model => model.Address)
             </th>
             <th></th>
         </tr>
@@ -68,10 +65,7 @@
                     @Html.DisplayFor(modelItem => item.Designation)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Technology)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.YearsOfExperience)
+                    @Html.DisplayFor(modelItem => item.Address)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
