@@ -97,7 +97,8 @@ namespace V2SViewComponent.Controllers
         public async Task<IActionResult> Edit(string id, Employee employee)
         {
             ViewBag.FormAction = "Edit";
-            if (id != employee.Id)
+            var queriedEmployee = await _employeeService.GetByIdAsync(id);
+            if (queriedEmployee == null)
             {
                 return NotFound();
             }
@@ -106,7 +107,7 @@ namespace V2SViewComponent.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var isDupRecord = _employeeService.IsDuplicateRecord(employee);
+                    var isDupRecord = _employeeService.IsDuplicateRecord(employee) && (queriedEmployee.Email != employee.Email);
                     if (!isDupRecord)
                     {
                         await _employeeService.UpdateAsync(id, employee);
