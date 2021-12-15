@@ -28,7 +28,6 @@ namespace V2SViewComponent.Services
 
         public async Task CreateAsync(Employee employee)
         {
-            //var empModel = _mapper.Map<Employee, EmployeeModel>(employee);
             await _employees.InsertOneAsync(employee);
         }
 
@@ -49,21 +48,12 @@ namespace V2SViewComponent.Services
 
         public async Task<IEnumerable<EmployeeModel>> GetAllAsync()
         {
-            //.AsQueryable()
-            //.Skip((page - 1) * pageSize)
-            //.Take(pageSize)
-            //.ProjectTo<Book, BookListDTO>(_mapper)
-            //.ToListAsync();
-            //return await _employees.AsQueryable<Employee>().ToListAsync();
             return await _employees.AsQueryable().ProjectTo<Employee, EmployeeModel>(_mapper).ToListAsync();
         }
 
         public IEnumerable<Employee> GetSearchRecords(string searchString)
         {
             searchString = searchString.ToLower();
-            //var employees =  _employees.AsQueryable().ProjectTo<Employee, EmployeeModel>(_mapper).ToList().Where(e => e.FirstName.ToLower().Contains(searchString) || e.LastName.ToLower().Contains(searchString)
-            //|| e.Designation.ToLower().Contains(searchString) || e.DOB.ToString("dd/MM/yyyy").Contains(searchString));
-
             var employees = _employees.AsQueryable<Employee>().ToList().Where(e => e.FirstName.ToLower().Contains(searchString) || e.LastName.ToLower().Contains(searchString) || e.Designation.ToLower().Contains(searchString) || e.DOB.ToString("dd/MM/yyyy").Contains(searchString));
             return employees;
         }

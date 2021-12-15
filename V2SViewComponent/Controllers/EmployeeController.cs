@@ -116,8 +116,6 @@ namespace V2SViewComponent.Controllers
                     else
                         ViewBag.Message = string.Format("{0} Already Exist", employee.Email.ToUpper());
 
-                    //await _employeeService.UpdateAsync(id, employee);
-                    //return RedirectToAction(nameof(Index));
                 }
 
                 return View(employee);
