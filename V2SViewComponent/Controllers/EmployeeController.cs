@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Extensions.Configuration;
+using System.Net;
 using System.Threading.Tasks;
 using V2SViewComponent.Interfaces;
 using V2SViewComponent.Models;
@@ -14,15 +11,17 @@ namespace V2SViewComponent.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IConfiguration _configuration;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService, IConfiguration configuration)
         {
             _employeeService = employeeService;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> Index()
         {
-            var employees = await _employeeService.GetAllAsync();
+            var employees = await _employeeService.GetEmployees();
             return View(employees);
         }
 
@@ -39,7 +38,7 @@ namespace V2SViewComponent.Controllers
                 else
                 {
                     ViewBag.SearchMsg = "Please enter the search string";
-                    return View("Index", await _employeeService.GetAllAsync());
+                    return View("Index", await _employeeService.GetEmployees());
                 }
             }
             catch
@@ -63,13 +62,10 @@ namespace V2SViewComponent.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var isDupRecord = _employeeService.IsDuplicateRecord(employee);
-                    if (!isDupRecord)
-                    {
-                        await _employeeService.CreateAsync(employee);
+                    var response = await _employeeService.CreateEmployee(employee);
+                    if (response.StatusCode == HttpStatusCode.Created)
                         return RedirectToAction(nameof(Index));
-                    }
-                    else
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
                         ViewBag.Message = string.Format("{0} Already Exist", employee.Email.ToUpper());
                 }
                 return View(employee);
@@ -84,11 +80,7 @@ namespace V2SViewComponent.Controllers
         public async Task<IActionResult> Edit(string id)
         {
             ViewBag.FormAction = "Edit";
-            var employee = await _employeeService.GetByIdAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+            var employee = await _employeeService.GetEmployeeByID(id);
             return View(employee);
         }
 
@@ -97,27 +89,16 @@ namespace V2SViewComponent.Controllers
         public async Task<IActionResult> Edit(string id, Employee employee)
         {
             ViewBag.FormAction = "Edit";
-            var queriedEmployee = await _employeeService.GetByIdAsync(id);
-            if (queriedEmployee == null)
-            {
-                return NotFound();
-            }
-
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var isDupRecord = _employeeService.IsDuplicateRecord(employee) && (queriedEmployee.Email != employee.Email);
-                    if (!isDupRecord)
-                    {
-                        await _employeeService.UpdateAsync(id, employee);
+                    var response = await _employeeService.UpdateEmployee(employee);
+                    if (response.StatusCode == HttpStatusCode.OK)
                         return RedirectToAction(nameof(Index));
-                    }
-                    else
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
                         ViewBag.Message = string.Format("{0} Already Exist", employee.Email.ToUpper());
-
                 }
-
                 return View(employee);
             }
             catch
@@ -129,11 +110,7 @@ namespace V2SViewComponent.Controllers
         // GET: EmployeeController/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            var employee = await _employeeService.GetByIdAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+            var employee = await _employeeService.GetEmployeeByID(id);
             return View(employee);
         }
 
@@ -143,13 +120,7 @@ namespace V2SViewComponent.Controllers
         {
             try
             {
-                var employee = await _employeeService.GetByIdAsync(id);
-                if (employee == null)
-                {
-                    return NotFound();
-                }
-
-                await _employeeService.DeleteAsync(id);
+                await _employeeService.DeleteEmployee(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

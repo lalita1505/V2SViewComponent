@@ -9,6 +9,10 @@ using V2SViewComponent.Interfaces;
 using V2SViewComponent.Models;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace V2SViewComponent.Services
 {
@@ -16,56 +20,69 @@ namespace V2SViewComponent.Services
     {
         private readonly IMongoCollection<Employee> _employees;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
+        HttpClient httpClient;
 
-        public EmployeeService(IMongoClient client, IMapper mapper)
+        public EmployeeService(IMongoClient client, IMapper mapper, IConfiguration configuration)
         {
             var database = client.GetDatabase("V2");
             var collection = database.GetCollection<Employee>(nameof(Employee));
 
             _employees = collection;
             _mapper = mapper;
+            _configuration = configuration;
+            httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(_configuration.GetValue<string>("WebAPIBaseUrl"));
         }
 
-        public async Task CreateAsync(Employee employee)
+        public async Task<HttpResponseMessage> CreateEmployee(Employee employee)
         {
-            await _employees.InsertOneAsync(employee);
+            string data = JsonConvert.SerializeObject(employee);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+            return await httpClient.PostAsync(httpClient.BaseAddress + "CreateEmployee", content);
         }
 
-        public bool IsDuplicateRecord(Employee employee)
+        public async Task<Employee> GetEmployeeByID(string id)
         {
-            var emp = _employees.AsQueryable<Employee>().Where(e => e.Email.ToLower() == employee.Email.ToLower()).FirstOrDefault();
-            if (emp == null)
-                return false;
-            else
-                return true;
+            Employee employee = new Employee();
+            var response = await httpClient.GetAsync(httpClient.BaseAddress + "GetEmployee/" + id);
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                employee = JsonConvert.DeserializeObject<Employee>(data);
+            }
+            return employee;
         }
 
-
-        public async Task<Employee> GetByIdAsync(string id)
+        public async Task<IEnumerable<EmployeeModel>> GetEmployees()
         {
-            return await _employees.Find<Employee>(e => e.Id == id).FirstOrDefaultAsync();
-        }
-
-        public async Task<IEnumerable<EmployeeModel>> GetAllAsync()
-        {
-            return await _employees.AsQueryable().ProjectTo<Employee, EmployeeModel>(_mapper).ToListAsync();
-        }
-
-        public IEnumerable<Employee> GetSearchRecords(string searchString)
-        {
-            searchString = searchString.ToLower();
-            var employees = _employees.AsQueryable<Employee>().ToList().Where(e => e.FirstName.ToLower().Contains(searchString) || e.LastName.ToLower().Contains(searchString) || e.Designation.ToLower().Contains(searchString) || e.DOB.ToString("dd/MM/yyyy").Contains(searchString));
+            IEnumerable<EmployeeModel> employees = null;
+            var response = await httpClient.GetAsync(httpClient.BaseAddress + "GetEmployees");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                employees = JsonConvert.DeserializeObject<IEnumerable<EmployeeModel>>(data);
+            }
             return employees;
         }
 
-        public async Task UpdateAsync(string id, Employee employee)
+        public IEnumerable<EmployeeModel> GetSearchRecords(string searchString)
         {
-            await _employees.ReplaceOneAsync(e => e.Id == id, employee);
+            searchString = searchString.ToLower();
+            var employees = _employees.AsQueryable().ProjectTo<Employee, EmployeeModel>(_mapper).ToList().Where(e => e.FirstName.ToLower().Contains(searchString) || e.LastName.ToLower().Contains(searchString) || e.Designation.ToLower().Contains(searchString) || e.DOB.ToString("dd/MM/yyyy").Contains(searchString));
+            return employees;
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task<HttpResponseMessage> UpdateEmployee(Employee employee)
         {
-            await _employees.DeleteOneAsync(s => s.Id == id);
+            string data = JsonConvert.SerializeObject(employee);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+            return await httpClient.PutAsync(httpClient.BaseAddress + "UpdateEmployee/" + employee.Id, content);
+        }
+
+        public async Task<HttpResponseMessage> DeleteEmployee(string id)
+        {
+           return await httpClient.DeleteAsync(httpClient.BaseAddress + "DeleteEmployee/" + id);
         }
     }
 

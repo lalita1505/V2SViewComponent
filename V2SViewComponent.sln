@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31727.386
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V2SViewComponent", "V2SViewComponent\V2SViewComponent.csproj", "{CE2DDBF9-B40A-4357-810B-9C41350B5DE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "V2SViewComponent", "V2SViewComponent\V2SViewComponent.csproj", "{CE2DDBF9-B40A-4357-810B-9C41350B5DE1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeWebAPI", "..\EmployeeWebAPI\EmployeeWebAPI\EmployeeWebAPI.csproj", "{63311DE6-4DE7-4821-877D-672014473383}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{CE2DDBF9-B40A-4357-810B-9C41350B5DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE2DDBF9-B40A-4357-810B-9C41350B5DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE2DDBF9-B40A-4357-810B-9C41350B5DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63311DE6-4DE7-4821-877D-672014473383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63311DE6-4DE7-4821-877D-672014473383}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63311DE6-4DE7-4821-877D-672014473383}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63311DE6-4DE7-4821-877D-672014473383}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
