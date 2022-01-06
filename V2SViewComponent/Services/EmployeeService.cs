@@ -13,6 +13,9 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Text;
+using System.Xml;
+using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace V2SViewComponent.Services
 {
@@ -61,7 +64,14 @@ namespace V2SViewComponent.Services
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                employees = JsonConvert.DeserializeObject<IEnumerable<EmployeeModel>>(data);
+
+                // To convert an XML node contained in string xml into a JSON string
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(data);
+
+                string jsonText = JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.None, true);
+                var obj = JObject.Parse(jsonText);
+                employees = JsonConvert.DeserializeObject<IEnumerable<EmployeeModel>>(obj["EmployeeModel"].ToString());
             }
             return employees;
         }

@@ -11,12 +11,10 @@ namespace V2SViewComponent.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;
-        private readonly IConfiguration _configuration;
 
-        public EmployeeController(IEmployeeService employeeService, IConfiguration configuration)
+        public EmployeeController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
-            _configuration = configuration;
         }
 
         public async Task<IActionResult> Index()
@@ -51,7 +49,7 @@ namespace V2SViewComponent.Controllers
         public IActionResult Create()
         {
             ViewBag.FormAction = "Create";
-            return View();
+            return ViewComponent("EmployeeForm");
         }
 
         [HttpPost]
@@ -68,7 +66,7 @@ namespace V2SViewComponent.Controllers
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                         ViewBag.Message = string.Format("{0} Already Exist", employee.Email.ToUpper());
                 }
-                return View(employee);
+                return ViewComponent("EmployeeForm", new { employee });
             }
             catch
             {
@@ -77,11 +75,10 @@ namespace V2SViewComponent.Controllers
         }
 
         // GET: EmployeeController/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public ActionResult Edit(string id)
         {
             ViewBag.FormAction = "Edit";
-            var employee = await _employeeService.GetEmployeeByID(id);
-            return View(employee);
+            return ViewComponent("EmployeeForm", new { id });
         }
 
         // POST: EmployeeController/Edit/5
@@ -99,7 +96,7 @@ namespace V2SViewComponent.Controllers
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                         ViewBag.Message = string.Format("{0} Already Exist", employee.Email.ToUpper());
                 }
-                return View(employee);
+                return ViewComponent("EmployeeForm", new { employee });
             }
             catch
             {
